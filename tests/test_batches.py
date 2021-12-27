@@ -36,6 +36,12 @@ class MyTestCase(unittest.TestCase):
         different_sku_line = OrderLine("order-123", "EXPENSIVE-TOASTER", 10)
         assert batch.can_allocate(different_sku_line) is False
 
+    def test_deallocate(self):
+        batch, line = self.make_batch_and_line("EXPENSIVE-FOOTSTOOL", 20, 2)
+        batch.allocate(line)
+        batch.deallocate(line)
+        assert batch.available_quantity == 20
+
 
 if __name__ == '__main__':
     unittest.main()
