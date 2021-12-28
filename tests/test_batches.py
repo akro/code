@@ -36,6 +36,12 @@ class MyTestCase(unittest.TestCase):
         different_sku_line = OrderLine("order-123", "EXPENSIVE-TOASTER", 10)
         assert batch.can_allocate(different_sku_line) is False
 
+    def test_allocation_is_idempotent(self):
+        batch, line = self.make_batch_and_line("ANGULAR-DESK", 20, 2)
+        batch.allocate(line)
+        batch.allocate(line)
+        assert batch.available_quantity == 18
+
     def test_deallocate(self):
         batch, line = self.make_batch_and_line("EXPENSIVE-FOOTSTOOL", 20, 2)
         batch.allocate(line)
