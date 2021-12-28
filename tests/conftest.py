@@ -1,3 +1,6 @@
+import time
+from pathlib import Path
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
@@ -17,3 +20,8 @@ def session(in_memory_db):
     start_mappers()
     yield sessionmaker(bind=in_memory_db)()
     clear_mappers()
+
+@pytest.fixture()
+def restart_api():
+    (Path(__file__).parent.parent / "src/flask_app.py").touch()
+    time.sleep(0.3)
