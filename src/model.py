@@ -1,6 +1,14 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional, Set
+from typing import Optional, Set, List
+
+
+def allocate(line: OrderLine, batches: List[Batch]) -> str:
+    batch = next(b for b in sorted(batches) if b.can_allocate(line))
+    batch.allocate(line)
+    return batch.reference
 
 
 @dataclass(frozen=True)
@@ -18,6 +26,9 @@ class Batch:
         self.eta = eta
         self._allocations = set()  # type: Set[OrderLine]
 
+    def __repr__(self):
+        return f"<Batch {self.reference}>"
+
     def __eq__(self, other):
         if not isinstance(other, Batch):
             return False
@@ -25,6 +36,13 @@ class Batch:
 
     def __hash__(self):
         return hash(self.reference)
+
+    def __gt__(self, other):
+        if self.eta is None:
+            return False
+        if other.eta is None:
+            return True
+        return self.eta > other.eta
 
     def allocate(self, line: OrderLine):
         if self.can_allocate(line):
